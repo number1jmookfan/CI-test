@@ -1,0 +1,20 @@
+name: Validate Commits
+on: [pull_request]
+
+jobs:
+  commit-message-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Need full history to compare commits
+
+      - name: Validate commit messages
+        run: |
+          #!/bin/bash
+          git log origin/${{ github.base_ref }}..HEAD --pretty=format:"%s" | while read msg; do
+            if ! echo "$msg" | grep -qE "^(feat|fix|docs|chore)(\(.+\))?:"; then
+              echo "Invalid commit message: $msg"
+              exit 1
+            fi
+          done
