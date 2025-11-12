@@ -13,10 +13,8 @@ jobs:
         run: |
           #!/bin/bash
           git log origin/${{ github.base_ref }}..HEAD --pretty=format:"%s" | while read msg; do
-            if ! echo "$msg" | grep -P "^((Merge) | (feat|fix|docs|chore|build|ci|docs|style|refactor|perf|revert|test)(\(.+\))?(!?):)"; then
+            if ! echo "$msg" | grep -P "^((Merge)|(feat|fix|docs|chore|build|ci|docs|style|refactor|perf|revert|test)(\(.+\))?(!?):)"; then
               echo "Invalid commit message: $msg"
               exit 1
             fi
           done
-
-          //todo: work on regex it's not ready
