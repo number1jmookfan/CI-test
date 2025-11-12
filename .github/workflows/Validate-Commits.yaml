@@ -18,5 +18,3 @@ jobs:
               exit 1
             fi
           done
-
-          //todo: work on regex it's not ready
