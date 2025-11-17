@@ -17,9 +17,11 @@ jobs:
           echo "Checking commits between $BASE_SHA and $HEAD_SHA"
 
           git fetch origin $BASE_SHA
-          git log $BASE_SHA..$HEAD_SHA --pretty=format:"%s" | while read msg; do
+
+          while read msg; do
+            echo "Commit: $msg"
             if ! echo "$msg" | grep -P "^((Merge)|(feat|fix|docs|chore|build|ci|docs|style|refactor|perf|revert|test)(\(.+\))?(!?):)"; then
               echo "Invalid commit message: $msg"
               exit 1
             fi
-          done
+          done < <(git log $BASE_SHA..$HEAD_SHA --pretty=format:"%s")
