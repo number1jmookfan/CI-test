@@ -12,16 +12,20 @@ jobs:
       - name: Validate commit messages
         run: |
           #!/bin/bash
+
           BASE_SHA=${{ github.event.pull_request.base.sha }}
           HEAD_SHA=${{ github.event.pull_request.head.sha }}
+
           echo "Checking commits between $BASE_SHA and $HEAD_SHA"
 
-          git fetch origin $BASE_SHA
+          # Ensure we actually have the entire history
+          git fetch --no-tags --prune --unshallow || true
+          git fetch origin
 
           while read msg; do
             echo "Commit: $msg"
-            if ! echo "$msg" | grep -P "^((Merge)|(feat|fix|docs|chore|build|ci|docs|style|refactor|perf|revert|test)(\(.+\))?(!?):)"; then
+            if ! echo "$msg" | grep -P "^((Merge)|(feat|fix|docs|chore|build|ci|style|refactor|perf|revert|test)(\(.+\))?(!?):)"; then
               echo "Invalid commit message: $msg"
               exit 1
             fi
-          done < <(git log $BASE_SHA..$HEAD_SHA --pretty=format:"%s")
+          done < <(git log "$BASE_SHA".."$HEAD_SHA" --pretty=format:"%s")
