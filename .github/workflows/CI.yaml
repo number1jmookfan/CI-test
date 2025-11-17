@@ -28,7 +28,7 @@ jobs:
 
       - name: Get merge base
         id: merge-base
-        if: github.event_name == 'pull-request'
+        if: github.event_name == 'pull_request'
         run: |
           git fetch origin ${{ github.event.pull_request.base.ref }}
           MERGE_BASE=$(git merge-base origin/${{ github.event.pull_request.base.ref }} ${{ github.event.pull_request.head.sha }})
