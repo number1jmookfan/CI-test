@@ -1,6 +1,6 @@
 name: CI
 
-on: [push, pull_request]
+on: [pull_request]
 
 permissions:
   contents: read
@@ -26,10 +26,18 @@ jobs:
           npm --version
           npx commitlint --version
 
+      - name: Get merge base
+        id: merge-base
+        if: github.event_name == 'pull-request'
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+          MERGE_BASE=$(git merge-base origin/${{ github.event.pull_request.base.ref }} ${{ github.event.pull_request.head.sha }})
+          echo "sha=$MERGE_BASE" >> $GITHUB_OUTPUT
+
       # - name: Validate current commit (last commit) with commitlint
       #   if: github.event_name == 'push'
       #   run: npx commitlint --last --verbose
 
       - name: Validate PR commits with commitlint
         if: github.event_name == 'pull_request'
-        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+        run: npx commitlint --from ${{ steps.merge-base.outputs.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
