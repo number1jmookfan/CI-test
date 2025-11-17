@@ -18,14 +18,13 @@ jobs:
 
           echo "Checking commits between $BASE_SHA and $HEAD_SHA"
 
-          # Ensure we actually have the entire history
-          git fetch --no-tags --prune --unshallow || true
-          git fetch origin
+          # Fetch only what is needed for the PR comparison
+          git fetch origin $BASE_SHA $HEAD_SHA
 
-          while read msg; do
+          while IFS= read -r msg; do
             echo "Commit: $msg"
             if ! echo "$msg" | grep -P "^((Merge)|(feat|fix|docs|chore|build|ci|style|refactor|perf|revert|test)(\(.+\))?(!?):)"; then
-              echo "Invalid commit message: $msg"
+              echo "❌ Invalid commit message: $msg"
               exit 1
             fi
           done < <(git log "$BASE_SHA".."$HEAD_SHA" --pretty=format:"%s")
