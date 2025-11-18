@@ -1,8 +1,2 @@
 print("hello world")
-print("goodbye world")
-print("hello underworld")
-print("")
-print("")
-print("")
-print("diverge from main")
-print("main gettin a little funky now")
+
